@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  Alert,
   Box,
   Button,
   Card,
   CardContent,
   CircularProgress,
+  Container,
   Grid,
   MenuItem,
   TextField,
   Typography,
-  Alert,
 } from "@mui/material";
 
 import api from "../services/api";
@@ -98,17 +99,27 @@ function EditEvent() {
     }
   };
 
+  // Loading
   if (loading) {
     return (
       <Box
         sx={{
           minHeight: "70vh",
           display: "flex",
+          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: "background.default",
         }}
       >
-        <CircularProgress />
+        <CircularProgress color="secondary" />
+
+        <Typography
+          sx={{ mt: 2 }}
+          color="text.secondary"
+        >
+          Loading event details...
+        </Typography>
       </Box>
     );
   }
@@ -116,235 +127,298 @@ function EditEvent() {
   return (
     <Box
       sx={{
-        maxWidth: 900,
-        mx: "auto",
-        px: { xs: 2, md: 3 },
+        minHeight: "100vh",
+        backgroundColor: "background.default",
         py: 5,
       }}
     >
-      {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography
-          variant="h4"
-          fontWeight={700}
-          gutterBottom
-        >
-          Edit Event
-        </Typography>
+      <Container maxWidth="xl">
 
-        <Typography color="text.secondary">
-          Update the details of your event.
-        </Typography>
-      </Box>
+        {/* Header */}
+        <Box sx={{ mb: 4 }}>
+          <Typography
+            variant="h4"
+            fontWeight={700}
+            color="primary"
+            gutterBottom
+          >
+            Edit Event
+          </Typography>
 
-      {/* Error */}
-      {error && (
-        <Alert
-          severity="error"
-          sx={{ mb: 3 }}
-        >
-          {error}
-        </Alert>
-      )}
+          <Typography
+            variant="body1"
+            color="text.secondary"
+          >
+            Update the details of your event.
+          </Typography>
+        </Box>
 
-      {/* Form */}
-      <Card
-        elevation={2}
-        sx={{
-          borderRadius: 3,
-        }}
-      >
-        <CardContent
+        {/* Error */}
+        {error && (
+          <Alert
+            severity="error"
+            sx={{
+              mb: 3,
+              borderRadius: 2,
+            }}
+          >
+            {error}
+          </Alert>
+        )}
+
+        {/* Form Card */}
+        <Card
+          elevation={0}
           sx={{
-            p: { xs: 2, md: 4 },
+            borderRadius: 3,
+            border: "1px solid",
+            borderColor: "divider",
           }}
         >
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
+          <CardContent
+            sx={{
+              p: { xs: 3, md: 4 },
+            }}
           >
-            <Grid container spacing={3}>
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+            >
 
-              {/* Title */}
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Event Title"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  required
-                />
+              {/* Basic Information */}
+              <Typography
+                variant="h6"
+                fontWeight={600}
+                color="primary"
+                sx={{ mb: 2 }}
+              >
+                Basic Information
+              </Typography>
+
+              <Grid container spacing={2}>
+
+                {/* Title */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Event Title"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleChange}
+                    required
+                  />
+                </Grid>
+
+                {/* Description */}
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    multiline
+                    rows={4}
+                  />
+                </Grid>
+
+                {/* Category */}
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    select
+                    fullWidth
+                    label="Category"
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    required
+                  >
+                    <MenuItem value="Technology">
+                      Technology
+                    </MenuItem>
+
+                    <MenuItem value="Workshop">
+                      Workshop
+                    </MenuItem>
+
+                    <MenuItem value="Conference">
+                      Conference
+                    </MenuItem>
+
+                    <MenuItem value="Networking">
+                      Networking
+                    </MenuItem>
+
+                    <MenuItem value="Other">
+                      Other
+                    </MenuItem>
+                  </TextField>
+                </Grid>
+
+                {/* Location */}
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Location"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleChange}
+                    required
+                  />
+                </Grid>
+
               </Grid>
 
-              {/* Description */}
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  multiline
-                  rows={4}
-                />
-              </Grid>
+              {/* Date & Time */}
+              <Typography
+                variant="h6"
+                fontWeight={600}
+                color="primary"
+                sx={{
+                  mt: 4,
+                  mb: 2,
+                }}
+              >
+                Date & Time
+              </Typography>
 
-              {/* Category */}
-              <Grid item xs={12} md={6}>
-                <TextField
-                  select
-                  fullWidth
-                  label="Category"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  required
-                >
-                  <MenuItem value="Technology">
-                    Technology
-                  </MenuItem>
+              <Grid container spacing={2}>
 
-                  <MenuItem value="Workshop">
-                    Workshop
-                  </MenuItem>
+                {/* Date */}
+                <Grid item xs={12} md={4}>
+                  <TextField
+                    fullWidth
+                    type="date"
+                    label="Event Date"
+                    name="event_date"
+                    value={formData.event_date}
+                    onChange={handleChange}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    required
+                  />
+                </Grid>
 
-                  <MenuItem value="Conference">
-                    Conference
-                  </MenuItem>
+                {/* Start Time */}
+                <Grid item xs={12} md={4}>
+                  <TextField
+                    fullWidth
+                    type="time"
+                    label="Start Time"
+                    name="start_time"
+                    value={formData.start_time}
+                    onChange={handleChange}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    required
+                  />
+                </Grid>
 
-                  <MenuItem value="Networking">
-                    Networking
-                  </MenuItem>
+                {/* End Time */}
+                <Grid item xs={12} md={4}>
+                  <TextField
+                    fullWidth
+                    type="time"
+                    label="End Time"
+                    name="end_time"
+                    value={formData.end_time}
+                    onChange={handleChange}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    required
+                  />
+                </Grid>
 
-                  <MenuItem value="Other">
-                    Other
-                  </MenuItem>
-                </TextField>
-              </Grid>
-
-              {/* Location */}
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  label="Location"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  required
-                />
-              </Grid>
-
-              {/* Date */}
-              <Grid item xs={12} md={4}>
-                <TextField
-                  fullWidth
-                  type="date"
-                  label="Event Date"
-                  name="event_date"
-                  value={formData.event_date}
-                  onChange={handleChange}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  required
-                />
-              </Grid>
-
-              {/* Start Time */}
-              <Grid item xs={12} md={4}>
-                <TextField
-                  fullWidth
-                  type="time"
-                  label="Start Time"
-                  name="start_time"
-                  value={formData.start_time}
-                  onChange={handleChange}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  required
-                />
-              </Grid>
-
-              {/* End Time */}
-              <Grid item xs={12} md={4}>
-                <TextField
-                  fullWidth
-                  type="time"
-                  label="End Time"
-                  name="end_time"
-                  value={formData.end_time}
-                  onChange={handleChange}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  required
-                />
               </Grid>
 
               {/* Capacity */}
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  type="number"
-                  label="Maximum Capacity"
-                  name="capacity"
-                  value={formData.capacity}
-                  onChange={handleChange}
-                  inputProps={{
-                    min: 1,
-                  }}
-                  required
-                />
+              <Typography
+                variant="h6"
+                fontWeight={600}
+                color="primary"
+                sx={{
+                  mt: 4,
+                  mb: 2,
+                }}
+              >
+                Capacity
+              </Typography>
+
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    type="number"
+                    label="Maximum Capacity"
+                    name="capacity"
+                    value={formData.capacity}
+                    onChange={handleChange}
+                    inputProps={{
+                      min: 1,
+                    }}
+                    required
+                  />
+                </Grid>
               </Grid>
 
               {/* Buttons */}
-              <Grid item xs={12}>
-                <Box
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: 2,
+                  mt: 5,
+                  pt: 3,
+                  borderTop: "1px solid",
+                  borderColor: "divider",
+                  flexWrap: "wrap",
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  onClick={() =>
+                    navigate("/organizer/events")
+                  }
+                  disabled={saving}
                   sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    gap: 2,
-                    mt: 2,
+                    minWidth: 100,
                   }}
                 >
-                  <Button
-                    variant="outlined"
-                    onClick={() =>
-                      navigate("/organizer/events")
-                    }
-                    disabled={saving}
-                  >
-                    Cancel
-                  </Button>
+                  Cancel
+                </Button>
 
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    disabled={saving}
-                    sx={{
-                      minWidth: 140,
-                    }}
-                  >
-                    {saving ? (
-                      <CircularProgress
-                        size={22}
-                        color="inherit"
-                      />
-                    ) : (
-                      "Update Event"
-                    )}
-                  </Button>
-                </Box>
-              </Grid>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="secondary"
+                  disabled={saving}
+                  sx={{
+                    minWidth: 140,
+                    fontWeight: 600,
+                  }}
+                >
+                  {saving ? (
+                    <CircularProgress
+                      size={22}
+                      color="inherit"
+                    />
+                  ) : (
+                    "Update Event"
+                  )}
+                </Button>
+              </Box>
 
-            </Grid>
-          </Box>
-        </CardContent>
-      </Card>
+            </Box>
+          </CardContent>
+        </Card>
+
+      </Container>
     </Box>
   );
 }
 
 export default EditEvent;
+
