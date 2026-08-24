@@ -19,10 +19,19 @@ const registerForEvent = async (req, res) => {
 
     const event = eventResult.rows[0];
 
+    // Prevent organizer from registering for their own event
+    if (Number(event.organizer_id) === Number(userId)) {
+      return res.status(403).json({
+        message: "Organizers cannot register for their own events",
+      });
+    }
+
     // Check if user already registered
     const existingRegistration = await pool.query(
-      `SELECT id FROM registrations
-       WHERE user_id = $1 AND event_id = $2`,
+      `SELECT id
+       FROM registrations
+       WHERE user_id = $1
+       AND event_id = $2`,
       [userId, eventId]
     );
 
@@ -34,7 +43,7 @@ const registerForEvent = async (req, res) => {
 
     // Check capacity
     const countResult = await pool.query(
-      `SELECT COUNT(*) 
+      `SELECT COUNT(*)
        FROM registrations
        WHERE event_id = $1`,
       [eventId]
