@@ -29,13 +29,15 @@ function EventDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { isAuthenticated } = useSelector(
-    (state) => state.auth
-  );
+  const { isAuthenticated, user } = useSelector(
+  (state) => state.auth
+);
 
   const [event, setEvent] = useState(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const isOrganizer =
+  event && user && Number(event.organizer_id) === Number(user.id);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -51,25 +53,30 @@ function EventDetails() {
   }, [id]);
 
   const handleRegister = async () => {
-    if (!isAuthenticated) {
-      navigate("/login");
-      return;
-    }
+  if (!isAuthenticated) {
+    navigate("/login");
+    return;
+  }
 
-    try {
-      setError("");
-      setMessage("");
+  if (isOrganizer) {
+    setError("Organizers cannot register for their own events.");
+    return;
+  }
 
-      const response = await registerForEvent(id);
+  try {
+    setError("");
+    setMessage("");
 
-      setMessage(response.data.message);
-    } catch (error) {
-      setError(
-        error.response?.data?.message ||
-          "Registration failed"
-      );
-    }
-  };
+    const response = await registerForEvent(id);
+
+    setMessage(response.data.message);
+  } catch (error) {
+    setError(
+      error.response?.data?.message ||
+        "Registration failed"
+    );
+  }
+};
 
   const formatDate = (date) => {
     if (!date) return "Date unavailable";
@@ -580,22 +587,29 @@ function EventDetails() {
                   </Alert>
                 )}
 
-                <Button
-                  fullWidth
-                  variant="contained"
-                  size="large"
-                  onClick={handleRegister}
-                  sx={{
+                {isOrganizer ? (
+                 <Alert severity="info">
+                  You are the organizer of this event. Organizers cannot
+                  register for their own events.
+                 </Alert>
+                 ) : (
+                 <Button
+                   fullWidth
+                   variant="contained"
+                   size="large"
+                   onClick={handleRegister}
+                   sx={{
                     py: 1.4,
                     fontWeight: 700,
                     backgroundColor: "#4F46E5",
                     "&:hover": {
-                      backgroundColor: "#4338CA",
+                    backgroundColor: "#4338CA",
                     },
                   }}
-                >
+                  >
                   Register for Event
-                </Button>
+                  </Button>
+ )}
 
                 <Typography
                   variant="caption"
