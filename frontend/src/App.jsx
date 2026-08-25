@@ -16,11 +16,12 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+
         {/* Public routes */}
 
         <Route
           path="/"
-          element={<h1>Event Platform</h1>}
+          element={<Login />}
         />
 
         <Route
@@ -75,6 +76,7 @@ function App() {
 
           </Route>
         </Route>
+
       </Routes>
     </BrowserRouter>
   );
