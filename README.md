@@ -100,8 +100,8 @@ event-workshop-platform/
 ### 1. Clone the repository
 
 ```bash
-git clone <your-github-repository-url>
-cd event-platform
+git clone https://github.com/GreshmaMotupalli/event-workshop-platform.git
+cd event-workshop-platform
 ```
 
 ### 2. Backend Setup
